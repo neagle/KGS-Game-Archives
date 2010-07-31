@@ -10,4 +10,45 @@ h2. Installation
 
 p. Place both kgscurl.php and the lib directory somewhere they'll be safe and content. I recommend a folder called KGS.
 
-p. You can put the jquery....
+You will need to edit the kgscurl.php file and change the two variables at the top of the file:
+
+bc.. <?php
+// USER CONFIG VARIABLES
+$username = 'nate451'; // this is your KGS username
+$gameFile = './kgsGames.html'; // specifies the file to write your game records to
+ 
+p. Change $username to your KGS username. By default, $gameFile will write to a file called kgsGames.html in the same directory as your php script. No need to change this if you don't want to.
+
+You can manually trigger the generation of your file by hitting kgscurl.php with your web browser, but you'll probably want to set up a cron job so that the file containing your records will be automatically generated. I recommend having it run once a day - no need to run it more often, and that will make the impact on KGS's servers as minimal as possible.
+
+(I'm sure KGS's servers are fine, but since bandwidth always costs somebody money, I structured the plugin to write to a file rather than grab information fresh off of KGS with every page view so that there's no chance I could impact KGS itself negatively. KGS is awesome.)
+
+This is the line I added to my crontab:
+
+bc. 45 3 * * * /home/nateeagle/nateeagle.com/go/kgs/kgscurl.php
+
+p. This sets it up to run the kgscurl.php script at 3:45am, once a day. (Dedicated to Elliott Smith, may he rest in peace.)
+
+p. If you want, you can "read more about setting up cron jobs":http://drupal.org/node/31548.
+
+p. You can put the jquery.kgsgames.js plugin script anywhere you want. I keep all my scripts in a /scripts folder off of the root of my site and then I minify them and combine them all for production. You'll need to include the script in a tag on any webpage using the script.
+
+bc. <script type="text/javascript" src="/scripts/jquery.kgsgames.js"></script>
+
+p. The plugin should be activated on the container you want to populate with your list of games.
+
+bc.. <ol id="myGames"></ol>
+
+<script type="text/javascript">
+(function($){
+    $(document).ready(function() {
+        $('#myGames').kgsgames({
+            itemTag: '<li />',
+            url: 'urlToYourGameList.html',
+            username: 'yourKGSUsername'
+        });
+    });
+})(jQuery);
+</script>
+
+p. itemTag tells the plugin what you want each game record to be wrapped in. I like having lists like these as list items, but it's up to you. The url option should be the path to the game records file you've set up in kgscurl.php. Your username should be the username you use on KGS.
