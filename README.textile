@@ -12,12 +12,17 @@ p. Place both kgscurl.php and the lib directory somewhere they'll be safe and co
 
 You will need to edit the kgscurl.php file and change the two variables at the top of the file:
 
-bc.. <?php
+bc.. #!/usr/local/bin/php -q
+<?php
 // USER CONFIG VARIABLES
 $username = 'nate451'; // this is your KGS username
 $gameFile = './kgsGames.html'; // specifies the file to write your game records to
  
+p. Depending on your server setup, you may need to change the location of the first line, which tells cron where to find php. On your server, type @which php@ to find out the correct path.
+
 p. Change $username to your KGS username. By default, $gameFile will write to a file called kgsGames.html in the same directory as your php script. No need to change this if you don't want to.
+
+p. You should also change the permissions of @kgscurl.php@ to 755. Ex: @chmod 755 kgscurl.php@.
 
 You can manually trigger the generation of your file by hitting kgscurl.php with your web browser, but you'll probably want to set up a cron job so that the file containing your records will be automatically generated. I recommend having it run once a day - no need to run it more often, and that will make the impact on KGS's servers as minimal as possible.
 
