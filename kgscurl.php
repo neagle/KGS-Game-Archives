@@ -1,6 +1,7 @@
+#!/usr/local/bin/php -q
 <?php
 // USER CONFIG VARIABLES
-$username = 'nate451'; // this is your KGS username
+$username = 'scotistic'; // this is your KGS username
 $gameFile = './kgsGames.html'; // specifies the file to write your game records to
 
 
