@@ -1,0 +1,13 @@
+h1. KGS Game Archives jQuery Plugin
+
+p. The "KGS Go Server":http://gokgs.com is pretty much the bee's knees in all respects. If you play Go on KGS, why not add a widget to your webpage that shows off your most recent games? The plugin generates a list of the most recent month's games and automatically generates a link to load the game in "EidoGo":http://eidogo.com/, an awesome SGF viewer/editor.
+
+h2. Requirements
+
+p. Since I'm not aware of a more direct API, my plugin uses a PHP file to scrape the KGS archive and create a static file with your game results. It also uses a PHP api called phpQuery used to parse the HTML from KGS's archive.
+
+h2. Installation
+
+p. Place both kgscurl.php and the lib directory somewhere they'll be safe and content. I recommend a folder called KGS.
+
+p. You can put the jquery....
