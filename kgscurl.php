@@ -96,20 +96,26 @@ $gameRecords = $gameLinks->parents('tr');
 $games = array();
 
 foreach($gameRecords as $game) {
-    $g = array(); 
-    $g['sgf'] = pq($game)->find('td:eq(0) > a')->attr('href');
-    $g['white'] = pq($game)->find('td:eq(1)')->text();
-    $g['black'] = pq($game)->find('td:eq(2)')->text();
-    $g['setup'] = pq($game)->find('td:eq(3)')->text();
-    $gameDate = pq($game)->find('td:eq(4)')->text();
-    // Convert date string to unix timestamp
-    $gameDate = strtotime($gameDate);
-    // Customize date formatting
-    $gameDate = date('F jS, Y', $gameDate);
-    $g['date'] = $gameDate; 
-    $g['result'] = pq($game)->find('td:eq(6)')->text();
+    if(pq($game)->find('td:eq(5)')->text() == 'Ranked') {
 
-    $games[] = $g;
+        $g = array(); 
+
+        $g['sgf'] = pq($game)->find('td:eq(0) > a')->attr('href');
+        $g['white'] = pq($game)->find('td:eq(1)')->text();
+        $g['black'] = pq($game)->find('td:eq(2)')->text();
+        $g['setup'] = pq($game)->find('td:eq(3)')->text();
+
+        $gameDate = pq($game)->find('td:eq(4)')->text();
+        // Convert date string to unix timestamp
+        $gameDate = strtotime($gameDate);
+        // Customize date formatting
+        $gameDate = date('F jS, Y', $gameDate);
+        $g['date'] = $gameDate; 
+
+        $g['result'] = pq($game)->find('td:eq(6)')->text();
+
+        $games[] = $g;
+    }
 }
 
 // convert game records to json
