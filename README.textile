@@ -27,6 +27,8 @@ This is the line I added to my crontab:
 
 bc. 45 3 * * * /home/nateeagle/nateeagle.com/go/kgs/kgscurl.php
 
+p. (If you, like me, ever lose track of the full path to your files, you can type @pwd@ (for present working directory) when you're in the right directory to get the path you need.)
+
 p. This sets it up to run the kgscurl.php script at 3:45am, once a day. (Dedicated to Elliott Smith, may he rest in peace.)
 
 p. If you want, you can "read more about setting up cron jobs":http://drupal.org/node/31548.
@@ -51,4 +53,4 @@ bc.. <ol id="myGames"></ol>
 })(jQuery);
 </script>
 
-p. itemTag tells the plugin what you want each game record to be wrapped in. I like having lists like these as list items, but it's up to you. The url option should be the path to the game records file you've set up in kgscurl.php. Your username should be the username you use on KGS.
+p. @itemTag@ tells the plugin what you want each game record to be wrapped in. I like having lists like these as list items, but it's up to you. The @url@ option should be the path to the game records file you've set up in @kgscurl.php@. @username@ should be the username you use on KGS.
