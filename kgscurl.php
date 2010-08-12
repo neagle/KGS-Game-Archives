@@ -1,12 +1,14 @@
-#!/usr/local/bin/php -q
 <?php
 // USER CONFIG VARIABLES
 $username = 'scotistic'; // this is your KGS username
-$gameFile = './kgsGames.html'; // specifies the file to write your game records to
+$cacheFile = './game_cache.json'; // specifies the file to write your game records to
+$numGames = 10; // Maximum number of games to retrieve
+$hoursFresh = 24; // Number of hours to get games from cache before refetching data from KGS
 
 
 // You shouldn't need to alter any of the following code.
 
+// Curl utility -- not written by me (should find attribution for this, if possible)
 class Curl
 {       
 
@@ -78,54 +80,114 @@ class Curl
     }
 }
 
-?>
-
-<?php
-
-$curl = new Curl();
-$html = $curl->get("http://www.gokgs.com/gameArchives.jsp?user=".$username);
-
+// phpQuery is the bee's knees - we use it to process the raw HTML from KGS's archives
 require('./lib/phpQuery/phpQuery/phpQuery.php');
 
-$doc = phpQuery::newDocument($html);
-// Identify game records by finding links to sgfs
-$gameLinks = $doc->find('a[href^="http://files.gokgs.com/games/"]');
-// Find our game record table rows by traversing back up the dom tree to the relevant table rows
-$gameRecords = $gameLinks->parents('tr');
+/* Checks to see how recently the cached version of the KGS Archives has been pulled from KGS */
+function checkCacheFreshness() {
+    global $cacheFile, $hoursFresh;
 
-$games = array();
+    $expires = strtotime($hoursFresh . ' hours ago');
 
-foreach($gameRecords as $game) {
-    if(pq($game)->find('td:eq(5)')->text() == 'Ranked') {
+    // If cache file does not already exist, create it
+    if (!file_exists($cacheFile)) {
+        $cf = fopen($cacheFile, 'w') or die('Can\'t open file.');
+        fclose($cf);
+    }
 
-        $g = array(); 
+    // Get the time the cache file was last modified
+    $shelfDate = filemtime($cacheFile);
 
-        $g['sgf'] = pq($game)->find('td:eq(0) > a')->attr('href');
-        $g['white'] = pq($game)->find('td:eq(1)')->text();
-        $g['black'] = pq($game)->find('td:eq(2)')->text();
-        $g['setup'] = pq($game)->find('td:eq(3)')->text();
+    // Return true if cache file is fresh, false if not
+    return (($shelfDate - $expires) > 0);
+}
 
-        $gameDate = pq($game)->find('td:eq(4)')->text();
-        // Convert date string to unix timestamp
-        $gameDate = strtotime($gameDate);
-        // Customize date formatting
-        $gameDate = date('F jS, Y', $gameDate);
-        $g['date'] = $gameDate; 
+/* Rewrite the cached archive file by fetching archives from KGS */
+function updateCache() {
+    // The $games array stores game records from KGS
+    $games = array();
 
-        $g['result'] = pq($game)->find('td:eq(6)')->text();
+    // Set initial year and month
+    $year = date('Y');
+    $month = date('n');
 
-        $games[] = $g;
+
+    while (count($games) < $numGames) {
+        echo 'Games so far: ' . count($games) . ' numGames: ' . $numGames;
+
+        $games[] = 'new game';
+
+        echo 'Year: ' . $year;
+        echo 'Month: ' . $month;
+
+        /*
+        $curl = new Curl();
+        $html = $curl->get("http://www.gokgs.com/gameArchives.jsp?user=".$username."&year=".$year."&month=".$month);
+
+        $doc = phpQuery::newDocument($html);
+        // Identify game records by finding links to sgfs
+        $gameLinks = $doc->find('a[href^="http://files.gokgs.com/games/"]');
+        // Find our game record table rows by traversing back up the dom tree to the relevant table rows
+        $gameRecords = $gameLinks->parents('tr');
+
+        foreach($gameRecords as $game) {
+            if(pq($game)->find('td:eq(5)')->text() == 'Ranked') {
+
+                $g = array(); 
+
+                $g['sgf'] = pq($game)->find('td:eq(0) > a')->attr('href');
+                $g['white'] = pq($game)->find('td:eq(1)')->text();
+                $g['black'] = pq($game)->find('td:eq(2)')->text();
+                $g['setup'] = pq($game)->find('td:eq(3)')->text();
+
+                $gameDate = pq($game)->find('td:eq(4)')->text();
+                // Convert date string to unix timestamp
+                $gameDate = strtotime($gameDate);
+                // Customize date formatting
+                $gameDate = date('F jS, Y', $gameDate);
+                $g['date'] = $gameDate; 
+
+                $g['result'] = pq($game)->find('td:eq(6)')->text();
+
+                $games[] = $g;
+            }
+        }
+        */
+        echo implode('', $games);
+
+        /*
+        // convert game records to json
+        $games = json_encode($games);
+
+        echo $games;
+
+        // Write contents of KGS Game Archives page to user-specified $gameFile 
+        $fh = fopen($gameFile, 'w') or die('Can\'t open file.');
+        fwrite($fh, $games);
+        fclose($fh);
+        */
+
     }
 }
 
-// convert game records to json
-$games = json_encode($games);
+/* Outputs the contents of the cached archive file in JSON format */
+function outputCache() {
+    global $cacheFile;
 
-echo $games;
+    if (file_exists($cacheFile)) {
+        $output = file_get_contents($cacheFile);
+        echo $output;
+    } else {
+        echo 'Cannot find cache file.';
+    }
+}
 
-// Write contents of KGS Game Archives page to user-specified $gameFile 
-$fh = fopen($gameFile, 'w') or die('Can\'t open file.');
-fwrite($fh, $games);
-fclose($fh);
+// If checkCacheFreshness returns false, update the file from KGS
+if (!checkCacheFreshness()) {
+    updateCache();
+}
+
+// Output the contents of the cached archive file
+outputCache();
 
 ?>
