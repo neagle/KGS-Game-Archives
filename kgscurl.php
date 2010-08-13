@@ -8,6 +8,7 @@ $cacheFile = '_game_cache.json'; // specifies the file to write your game record
 $username = $_GET['username'];
 $numGames = isset($_GET['numGames']) ? $_GET['numGames'] : 20; // Maximum number of games to retrieve
 $hoursFresh = isset($_GET['hoursFresh']) ? $_GET['hoursFresh'] : 24; // Number of hours to get games from cache before refetching data from KGS
+$dateFormat = isset($_GET['dateFormat']) ? $_GET['dateFormat'] : 'F jS, Y'; // Default date format 
 
 // You shouldn't need to alter any of the following code.
 $cacheFile = $cacheDir . $username . $cacheFile;
@@ -110,7 +111,7 @@ function checkCacheFreshness() {
 
 /* Rewrite the cached archive file by fetching archives from KGS */
 function updateCache() {
-    global $username, $numGames, $cacheFile;
+    global $username, $numGames, $cacheFile, $dateFormat;
 
     // The $games array stores game records from KGS
     $games = array();
@@ -137,7 +138,8 @@ function updateCache() {
         $gameRecords = $gameLinks->parents('tr');
 
         foreach($gameRecords as $game) {
-            if(pq($game)->find('td:eq(5)')->text() == 'Ranked') {
+            // Reviewed games mess up our formatting and don't really make sense for an archive anyway
+            if(pq($game)->find('td:eq(4)')->text() != 'Review') {
 
                 $g = array(); 
 
@@ -149,8 +151,7 @@ function updateCache() {
                 $gameDate = pq($game)->find('td:eq(4)')->text();
                 // Convert date string to unix timestamp
                 $gameDate = strtotime($gameDate);
-                // Customize date formatting
-                $gameDate = date('F jS, Y', $gameDate);
+                $gameDate = date($dateFormat, $gameDate);
                 $g['date'] = $gameDate; 
 
                 $g['result'] = pq($game)->find('td:eq(6)')->text();
@@ -190,7 +191,7 @@ function outputCache() {
 }
 
 // If checkCacheFreshness returns false, update the file from KGS
-if ((checkCacheFreshness() == false) || ($_GET[noCache] == true)) {
+if ((checkCacheFreshness() == false) || ($_GET[noCache] == 'true')) {
     updateCache();
 }
 

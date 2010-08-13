@@ -29,6 +29,8 @@ var $kgs = $.kgsgames = function(elem, options) {
 $kgs.prototype = {
     options: {
         // defaults
+        archiveLinkText: 'Full Archive',
+        dateFormat: 'F jS', 
         itemTag: '<li />',
         month: null,
         noCache: false, // set to true to force rebuilding of the cache file... useful when changing settings
@@ -47,6 +49,7 @@ $kgs.prototype = {
             url: this.options.url,
             data: {
                 username: that.options.username,
+                dateFormat: that.options.dateFormat,
                 numGames: that.options.numGames,
                 noCache: that.options.noCache
             },
@@ -56,9 +59,6 @@ $kgs.prototype = {
         });
     },
     displayGames: function(games) {
-        // Hide game container initially
-        this.$elem.hide();
-
         // Build the game list
         for(var i=games.length-1;i>=0;i--) {
             var white, black;
@@ -71,18 +71,15 @@ $kgs.prototype = {
                 black = 'winner';
             }
             $(this.options.itemTag, {
-                html: '<span class="date">' + games[i].date + '</span> <a href="http://eidogo.com/#url:' + games[i].sgf +'"> <span class="' + white + '">' + games[i].white + '</span> vs. <span class="' + black + '">' + games[i].black + '</span>'
+                html: '<span class="date">' + games[i].date + '</span> <a href="http://eidogo.com/#url:' + games[i].sgf +'"> <span class="' + black + '">' + games[i].black + '</span> vs. <span class="' + white + '">' + games[i].white + '</span>'
             }).prependTo(this.$elem);
         }
 
         // Add archive link
         $('<p />', {
             'class': 'archive',
-            html: '<a href="http://www.gokgs.com/gameArchives.jsp?user=' + this.options.username + '">Full Archive</a>'
+            html: '<a href="http://www.gokgs.com/gameArchives.jsp?user=' + this.options.username + '">' + this.options.archiveLinkText + '</a>'
         }).insertAfter(this.$elem);
-
-        // Animate open game container
-        this.$elem.fadeIn('slow');
     }
 }
 
