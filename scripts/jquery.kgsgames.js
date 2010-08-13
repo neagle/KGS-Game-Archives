@@ -31,6 +31,8 @@ $kgs.prototype = {
         // defaults
         itemTag: '<li />',
         month: null,
+        noCache: false, // set to true to force rebuilding of the cache file... useful when changing settings
+        numGames: 20,
         tag: null, // use to add an optional filter for games with a certain tag
         url: null,
         username: null,
@@ -43,9 +45,13 @@ $kgs.prototype = {
         var that = this;
         $.ajax({
             url: this.options.url,
+            data: {
+                username: that.options.username,
+                numGames: that.options.numGames,
+                noCache: that.options.noCache
+            },
             dataType: 'json',
-            success: $.proxy(function(data) {
-                that.displayGames(data);
+            success: $.proxy(function(data) { that.displayGames(data);
             }, this)
         });
     },
@@ -54,7 +60,7 @@ $kgs.prototype = {
         this.$elem.hide();
 
         // Build the game list
-        for(var i=games.length-1;i>0;i--) {
+        for(var i=games.length-1;i>=0;i--) {
             var white, black;
             // Set winner & loser
             if (games[i].result.substring(0, 1) == 'W') {

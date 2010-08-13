@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>jQuery Plugin Boilerplate</title>
+<style type="text/css">
+span.winner {
+    background-color: hsla(100, 50%, 50%, 0.5);
+}
+</style>
+</head>
+
+<body>
+
+<!-- List to populate with games -->
+<ul id="go-games">
+</ul>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.kgsgames.js"></script>
+
+<script type="text/javascript">
+
+(function($){
+
+    $(document).ready(function() {
+        $('#go-games').kgsgames({
+            itemTag: '<li />',
+            numGames: 10,
+            url: '/go/kgs/kgscurl.php',
+            username: 'nate451'
+        });
+    });
+
+})(jQuery);
+
+</script>
+
+</body>
+</html>
