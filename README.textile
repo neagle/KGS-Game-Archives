@@ -47,7 +47,7 @@ p. Here's a list of available options:
 
 |_. Option |_. Type |_. Default |_. Explanation |
 | @archivesTag@ | string | '&lt;ul /&gt;' | Tag used for the container of all the individual games. |
-| @fullArchiveLink@ | string | '&lt;p /&gt;' | Tag used for the link to one's full archives at the end of the KGS Games widget. | 
+| @fullArchiveLink@ | string | '&lt;p /&gt;' | Tag used for the link to one's full archives at the end of the KGS Games widget. |
 | @fullArchiveLinkText@ | string | 'Full Archive' | Default text for the link to one's full archives at the end of the KGS Games widget. |
 | @dateFormat@ | string | 'F jS' | Date format for game dates. Uses "PHP date syntax":http://php.net/manual/en/function.date.php |
 | @hoursFresh@ | number | 24 | Number of hours to consider a cached file fresh - not in need of an update from KGS. |
@@ -66,8 +66,7 @@ p. Default:
 
 bc.. <li><a href="http://eidogo.com/#url:@GAMESGF"><span class="date">@DATE:</span> <span class="black @BLACKRESULT">@BLACK</span> vs. <span class="white @WHITERESULT">@WHITE</span>: @RESULT</a>
 
-bc.. 
-   @GAMESGF: a link to a game's SGF file
+bc.. @GAMESGF: a link to a game's SGF file
    @DATE: date of the game -- alter formatting via dateFormat option
    @BLACK: username & rank of person playing black
    @BLACKURL: link to black's archives on KGS
