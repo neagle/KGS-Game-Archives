@@ -62,7 +62,7 @@ p. Here's a list of available options:
 
 h3. Output default and variables
 
-p. Default: @'<li><a href="http://eidogo.com/#url:@GAMESGF"><span class="date">@DATE:</span> <span class="black @BLACKRESULT">@BLACK</span> vs. <span class="white @WHITERESULT">@WHITE</span>: @RESULT</a>'@
+p. Default: @'&lt;li&gt;&lt;a href=&quot;http://eidogo.com/#url:@GAMESGF&quot;&gt;&lt;span class=&quot;date&quot;&gt;@DATE:&lt;/span&gt; &lt;span class=&quot;black @BLACKRESULT&quot;&gt;@BLACK&lt;/span&gt; vs. &lt;span class=&quot;white @WHITERESULT&quot;&gt;@WHITE&lt;/span&gt;: @RESULT&lt;/a&gt;'@
 
 bc.. 
    @GAMESGF: a link to a game's SGF file
