@@ -33,6 +33,7 @@ $kgs.prototype = {
         fullArchiveLink: '<p />',
         fullArchiveLinkText: 'Full Archive',
         dateFormat: 'F jS', // format of date -- uses php strtodate rules
+        hoursFresh: null, // by default, cached file is considered "fresh" (not in need of an update) for 24 hours
         noCache: null, // set to true to force rebuilding of the cache file... useful when changing settings
         numGames: 20, // maximum number of games to try to fetch from archives
         // a custom string that uses @VALUES to stand in for game result values
@@ -66,6 +67,7 @@ $kgs.prototype = {
         ajaxOpts = {
             username: that.options.username,
             dateFormat: that.options.dateFormat,
+            hoursFresh: that.options.hoursFresh,
             numGames: that.options.numGames,
             noCache: that.options.noCache,
             tags: that.options.tags,

@@ -1,42 +1,18 @@
 h1. KGS Game Archives jQuery Plugin
 
-p. The "KGS Go Server":http://gokgs.com is pretty much the bee's knees in all respects. If you play Go on KGS, why not add a widget to your webpage that shows off your most recent games? The plugin generates a list of the most recent month's games and automatically generates a link to load the game in "EidoGo":http://eidogo.com/, an awesome SGF viewer/editor.
+p. The "KGS Go Server":http://gokgs.com is pretty much the bee's knees in all respects. KGS provides "an excellent web interface":http://www.gokgs.com/archives.jsp for viewing one's archived games, but no API (that I know about) for grabbing that data. This plugin uses php + curl to scrape content from KGS's archives, generate a list of one's most recent games, and automatically generate a link to load the game in "EidoGo":http://eidogo.com/, an awesome web-based SGF viewer/editor.
+
+h2. Demo
+
+p. "Simple & Customized Demos":http://nateeagle.com/go/kgs/
 
 h2. Requirements
 
-p. Since I'm not aware of a more direct API, my plugin uses a PHP file to scrape the KGS archive and create a static file with your game results. It also uses a PHP api called phpQuery used to parse the HTML from KGS's archive.
+p. The KGS Games plugin uses a PHP file to scrape the KGS archive and create a static file with your game results. It also uses a PHP api called phpQuery used to parse the HTML from KGS's archive.
 
 h2. Installation
 
 p. Place both kgscurl.php and the lib directory somewhere they'll be safe and content. I recommend a folder called KGS.
-
-You will need to edit the kgscurl.php file and change the two variables at the top of the file:
-
-bc.. #!/usr/local/bin/php -q
-<?php
-// USER CONFIG VARIABLES
-$username = 'nate451'; // this is your KGS username
-$gameFile = './kgsGames.html'; // specifies the file to write your game records to
- 
-p. Depending on your server setup, you may need to change the location of the first line, which tells cron where to find php. On your server, type @which php@ to find out the correct path.
-
-p. Change $username to your KGS username. By default, $gameFile will write to a file called kgsGames.html in the same directory as your php script. No need to change this if you don't want to.
-
-p. You should also change the permissions of @kgscurl.php@ to 755. Ex: @chmod 755 kgscurl.php@.
-
-You can manually trigger the generation of your file by hitting kgscurl.php with your web browser, but you'll probably want to set up a cron job so that the file containing your records will be automatically generated. I recommend having it run once a day - no need to run it more often, and that will make the impact on KGS's servers as minimal as possible.
-
-(I'm sure KGS's servers are fine, but since bandwidth always costs somebody money, I structured the plugin to write to a file rather than grab information fresh off of KGS with every page view so that there's no chance I could impact KGS itself negatively. KGS is awesome.)
-
-This is the line I added to my crontab:
-
-bc. 45 3 * * * /home/nateeagle/nateeagle.com/go/kgs/kgscurl.php
-
-p. (If you, like me, ever lose track of the full path to your files, you can type @pwd@ (for present working directory) when you're in the right directory to get the path you need.)
-
-p. This sets it up to run the kgscurl.php script at 3:45am, once a day. (Dedicated to Elliott Smith, may he rest in peace.)
-
-p. If you want, you can "read more about setting up cron jobs":http://drupal.org/node/31548.
 
 p. You can put the jquery.kgsgames.js plugin script anywhere you want. I keep all my scripts in a /scripts folder off of the root of my site and then I minify them and combine them all for production. You'll need to include the script in a tag on any webpage using the script.
 
@@ -44,18 +20,30 @@ bc. <script type="text/javascript" src="/scripts/jquery.kgsgames.js"></script>
 
 p. The plugin should be activated on the container you want to populate with your list of games.
 
-bc.. <ol id="myGames"></ol>
+<pre><code class="js">
+$(&#39;#go-games1&#39;).kgsgames({ 
+    url: &#39;/go/kgs/kgscurl.php&#39;, 
+    username: &#39;nate451&#39; 
+});</code></pre>
 
-<script type="text/javascript">
-(function($){
-    $(document).ready(function() {
-        $('#myGames').kgsgames({
-            itemTag: '<li />',
-            url: 'urlToYourGameList.html',
-            username: 'yourKGSUsername'
-        });
-    });
-})(jQuery);
-</script>
+p. The url should be the path to wherever you've placed the kgscurl.php file. The username variable should be your KGS username.
 
-p. @itemTag@ tells the plugin what you want each game record to be wrapped in. I like having lists like these as list items, but it's up to you. The @url@ option should be the path to the game records file you've set up in @kgscurl.php@. @username@ should be the username you use on KGS.
+*An important note about caching:* Since this plugin makes HTTP requests to KGS's server, I was very concerned about being a burden - even a minor one - on KGS's server load. To help minimize any impact this plugin has on KGS, by default, it writes the results of its operation to a file in the same directory as kgscurl.php. On subsequent requests, it checks to see whether the cache file is over 24 hours old or not. If it's not, it uses that data rather than fetching fresh data from KGS. I suspect that updating every day will be quite frequent enough for most users. If you need to change this, you can send a different integer for the "hoursFresh" variable, or you can set noCache to true to fetch data from KGS every time.
+
+This option is to assist when initially setting up the widget, as any change in options (such as changing the number of games) may not be reflected right away if the cached file isn't updated. Please turn noCache off when you're ready for deployment so that we're good stewards of the tool KGS has provided.
+
+h2. Configuration
+
+KGS Games is highly customizable. You can customize your implementations by passing options when you initialize your widget. Options are passed using this form:
+
+bc.. $('#myKGSGamesWidget').kgsGames({
+    option: value,
+    option2: value2,
+    option3: value3
+});
+
+p. Here's a list of available options:
+
+|_. Option |_. Type |_. Default |_. Explanation |
+| @archivesTag@ | string | '<ul />' | Tag used for the container of all the individual games. |
+| @fullArchiveLink@ | string | '<p />' | Tag used for the link to one's full archives at the end of the KGS Games widget. | 
