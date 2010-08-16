@@ -29,19 +29,29 @@ var $kgs = $.kgsgames = function(elem, options) {
 $kgs.prototype = {
     options: {
         // defaults
-        archiveLinkText: 'Full Archive',
+        archivesTag: '<ul />',
+        fullArchiveLink: '<p />',
+        fullArchiveLinkText: 'Full Archive',
         dateFormat: 'F jS', // format of date -- uses php strtodate rules
         noCache: null, // set to true to force rebuilding of the cache file... useful when changing settings
         numGames: 20, // maximum number of games to try to fetch from archives
+        // a custom string that uses @VALUES to stand in for game result values
+        /* valid @VALUES:
+
+           @GAMESGF: a link to a game's SGF file
+           @DATE: date of the game -- alter formatting via dateFormat option
+           @BLACK: username & rank of person playing black
+           @BLACKURL: link to black's archives on KGS
+           @BLACKRESULT: either 'winner' or 'loser', depending on who won
+           @WHITE: username & rank of person playing white
+           @WHITEURL: link to white's archives on KGS
+           @WHITERESULT: either 'winner' or 'loser', depending on who won
+           @RESULT: game outcome, ie: 'B+7.5' or 'W+Res.'
+
+           All @VALUES may be ommitted or repeated.
+        */
+        output: '<li><a href="http://eidogo.com/#url:@GAMESGF"><span class="date">@DATE:</span> <span class="black @BLACKRESULT">@BLACK</span> vs. <span class="white @WHITERESULT">@WHITE</span>: @RESULT</a>',
         ranked: true, // by default, only fetches ranked games
-        // Customizable structure - can be replaced, for instance, with <table />, <tr />, and <td />
-        structure: {
-            archives: '<ul />',
-            row: '<li />',
-            item: '<span />',
-            archiveLink: '<p />',
-            space: ' '
-        },
         tags: null, // set to t to return only tagged games 
         url: null,
         username: null,
@@ -75,59 +85,38 @@ $kgs.prototype = {
     },
     displayGames: function(games) {
         // Build the game list
-        var archives,
-            tagArchives = this.options.structure.archives,
-            tagRow = this.options.structure.row,
-            tagItem = this.options.structure.item,
-            tagArchiveLink = this.options.structure.archiveLink,
-            space = this.options.structure.space;
+        var archives = $(this.options.archivesTag).appendTo(this.$elem);
 
-        archives = $(tagArchives).appendTo(this.$elem);
         for(var i=games.length-1;i>=0;i--) {
-            var white, black;
-
-            var row = $(tagRow).prependTo(archives);
+            var output = this.options.output,
+                white, black;
 
             // Set winner & loser
             if (games[i].result.substring(0, 1) == 'W') {
-                white = 'winner';
-                black = 'loser';
+                whiteresult = 'winner';
+                blackresult = 'loser';
             } else {
-                white = 'loser';
-                black = 'winner';
+                whiteresult = 'loser';
+                blackresult = 'winner';
             }
 
-            var date = $(tagItem, {
-                html: '<a href="http://eidogo.com/#url:' + games[i].sgf + '">' + games[i].date + '</a>' + space,
-                'class': 'date'
-            }).appendTo(row);
-            
-            var bl = $(tagItem, {
-                text: games[i].black + space,
-                'class': 'black ' + black
-            }).appendTo(row);
+            output = output.replace(/@GAMESGF/g, games[i].sgf);
+            output = output.replace(/@DATE/g, games[i].date); 
+            output = output.replace(/@BLACKRESULT/g, blackresult); 
+            output = output.replace(/@BLACKURL/g, games[i].blackurl); 
+            output = output.replace(/@BLACK/g, games[i].black); 
+            output = output.replace(/@WHITERESULT/g, whiteresult); 
+            output = output.replace(/@WHITEURL/g, games[i].whiteurl); 
+            output = output.replace(/@WHITE/g, games[i].white); 
+            output = output.replace(/@RESULT/g, games[i].result); 
 
-            var vs = $(tagItem, {
-                text: 'vs.' + space,
-                'class': 'vs'
-            }).appendTo(row);
-
-            var wh = $(tagItem, {
-                text: games[i].white + space,
-                'class': 'white ' + white 
-            }).appendTo(row);
-
-            var result = $(tagItem, {
-                text: games[i].result,
-                'class': 'result'
-            }).appendTo(row);
-
+            archives.prepend(output);
         }
 
         // Add archive link
-        $(tagArchiveLink, {
+        $(this.options.fullArchiveLink, {
             'class': 'archive',
-            html: '<a href="http://www.gokgs.com/gameArchives.jsp?user=' + this.options.username + '">' + this.options.archiveLinkText + '</a>'
+            html: '<a href="http://www.gokgs.com/gameArchives.jsp?user=' + this.options.username + '">' + this.options.fullArchiveLinkText + '</a>'
         }).appendTo(this.$elem);
     }
 }

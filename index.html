@@ -2,49 +2,75 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>jQuery Plugin Boilerplate</title>
+<title>jQuery.KGSGames: a way to display your KGS game archives</title>
 <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/kgsgames.css" />
 </head>
 
 <body>
 
-<!-- List to populate with games -->
-<div id="go-games1" class="kgsgames">
-    <h3>Recent KGS Games</h3>
-</div>
+<div id="container">
 
-<div id="go-games2" class="kgsgames table">
-    <h3>Recent KGS Games</h3>
+    <h1>KGS Game Archive Plugin Demos</h1>
+
+    <pre><code class="js">
+    $(&#39;#go-games1&#39;).kgsgames({ 
+        url: &#39;/go/kgs/kgscurl.php&#39;, 
+        username: &#39;nate451&#39; 
+    });</code></pre>
+
+    <h2>Simple Example</h2>
+
+    <div id="go-games1" class="kgsgames">
+        <h3>Recent KGS Games</h3>
+    </div>
+
+    <h2>Highly Customized Example</h2>
+
+    <pre><code class="js">
+    // Example using a table
+    $('#go-games2').kgsgames({
+        archivesTag: '&lt;table /&gt;',
+        dateFormat: 'n.j.Y',
+        numGames: 10,
+        output: '&lt;tr&gt;&lt;td class="date"&gt;&lt;a href="http://eidogo.com/#url:@GAMESGF"&gt;@DATE&lt;/td&gt;&lt;td class="@BLACKRESULT"&gt;&lt;a href="@BLACKURL" class="black"&gt;@BLACK&lt;/a&gt;&lt;/td&gt;&lt;td class="vs"&gt;vs.&lt;/td&gt;&lt;td class="@WHITERESULT"&gt;&lt;a href="@WHITEURL" class="white"&gt;@WHITE&lt;/a&gt;&lt;/td&gt;&lt;td class="result"&gt;&lt;a href="http://eidogo.com/#url:@GAMESGF"&gt;@RESULT&lt;/a&gt;&lt;/td&gt;',
+        ranked: false,
+        url: '/go/kgs/kgscurl.php',
+        username: 'nate451',
+        widgetName: 'two'
+    });</code></pre>
+
+    <div id="go-games2" class="kgsgames table">
+        <h3>Recent KGS Games</h3>
+    </div>
+
 </div>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="scripts/chili/jquery.chili-2.2.js"></script>
+<script type="text/javascript" src="scripts/chili/recipes.js"></script>
 <script type="text/javascript" src="scripts/jquery.kgsgames.js"></script>
 
 <script type="text/javascript">
 
 (function($){
+    ChiliBook.lineNumbers = true;
 
     $(document).ready(function() {
+
         $('#go-games1').kgsgames({
-            dateFormat: 'n.j.Y',
-            numGames: 10,
             url: '/go/kgs/kgscurl.php',
             username: 'nate451'
         });
 
         // Example using a table
         $('#go-games2').kgsgames({
+            archivesTag: '<table />',
             dateFormat: 'n.j.Y',
             numGames: 10,
+            output: '<tr><td class="date"><a href="http://eidogo.com/#url:@GAMESGF">@DATE</td><td class="@BLACKRESULT"><a href="@BLACKURL" class="black">@BLACK</a></td><td class="vs">vs.</td><td class="@WHITERESULT"><a href="@WHITEURL" class="white">@WHITE</a></td><td class="result"><a href="http://eidogo.com/#url:@GAMESGF">@RESULT</a></td>',
             ranked: false,
             url: '/go/kgs/kgscurl.php',
             username: 'nate451',
-            structure: {
-                archives: '<table />',
-                row: '<tr />',
-                item: '<td />',
-                space: ''
-            },
             widgetName: 'two'
         });
     });

@@ -14,6 +14,7 @@ $tags = isset($_GET['tags']) ? '&tags=' . $_GET['tags'] : '';
 $widgetName = isset($_GET['widgetName']) ? '_' . $_GET['widgetName'] : ''; 
 
 // You shouldn't need to alter any of the following code.
+$kgsURL = 'http://gokgs.com/';
 $cacheFile = $cacheDir . $username . $widgetName . $cacheFile;
 
 // Curl utility -- not written by me (should find attribution for this, if possible)
@@ -114,7 +115,7 @@ function checkCacheFreshness() {
 
 /* Rewrite the cached archive file by fetching archives from KGS */
 function updateCache() {
-    global $username, $numGames, $cacheFile, $dateFormat, $ranked, $tags;
+    global $kgsURL, $username, $numGames, $cacheFile, $dateFormat, $ranked, $tags;
 
     // The $games array stores game records from KGS
     $games = array();
@@ -130,7 +131,7 @@ function updateCache() {
         // echo 'Month: ' . $month;
 
         $curl = new Curl();
-        $htmlURL = 'http://www.gokgs.com/gameArchives.jsp?user='.$username.'&year='.$year.'&month='.$month.$tags;
+        $htmlURL = $kgsURL . 'gameArchives.jsp?user='.$username.'&year='.$year.'&month='.$month.$tags;
         if (empty($tags) == false) { $htmlURL = $htmlURL . '&tags=' . $tags; }
         $html = $curl->get($htmlURL);
         // echo $html;
@@ -153,7 +154,9 @@ function updateCache() {
 
                 $g['sgf'] = pq($game)->find('td:eq(0) > a')->attr('href');
                 $g['white'] = pq($game)->find('td:eq(1)')->text();
+                $g['whiteurl'] = $kgsURL . pq($game)->find('td:eq(1)')->children('a')->attr('href');
                 $g['black'] = pq($game)->find('td:eq(2)')->text();
+                $g['blackurl'] = $kgsURL . pq($game)->find('td:eq(2)')->children('a')->attr('href');
                 $g['setup'] = pq($game)->find('td:eq(3)')->text();
 
                 $gameDate = pq($game)->find('td:eq(4)')->text();
