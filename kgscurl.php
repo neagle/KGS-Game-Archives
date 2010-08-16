@@ -9,9 +9,12 @@ $username = $_GET['username'];
 $numGames = isset($_GET['numGames']) ? $_GET['numGames'] : 20; // Maximum number of games to retrieve
 $hoursFresh = isset($_GET['hoursFresh']) ? $_GET['hoursFresh'] : 24; // Number of hours to get games from cache before refetching data from KGS
 $dateFormat = isset($_GET['dateFormat']) ? $_GET['dateFormat'] : 'F jS, Y'; // Default date format 
+$ranked = isset($_GET['ranked']) ? $_GET['ranked'] : true; // by default, only fetches ranked games
+$tags = isset($_GET['tags']) ? '&tags=' . $_GET['tags'] : ''; 
+$widgetName = isset($_GET['widgetName']) ? '_' . $_GET['widgetName'] : ''; 
 
 // You shouldn't need to alter any of the following code.
-$cacheFile = $cacheDir . $username . $cacheFile;
+$cacheFile = $cacheDir . $username . $widgetName . $cacheFile;
 
 // Curl utility -- not written by me (should find attribution for this, if possible)
 class Curl
@@ -111,7 +114,7 @@ function checkCacheFreshness() {
 
 /* Rewrite the cached archive file by fetching archives from KGS */
 function updateCache() {
-    global $username, $numGames, $cacheFile, $dateFormat;
+    global $username, $numGames, $cacheFile, $dateFormat, $ranked, $tags;
 
     // The $games array stores game records from KGS
     $games = array();
@@ -127,7 +130,9 @@ function updateCache() {
         // echo 'Month: ' . $month;
 
         $curl = new Curl();
-        $html = $curl->get("http://www.gokgs.com/gameArchives.jsp?user=".$username."&year=".$year."&month=".$month);
+        $htmlURL = 'http://www.gokgs.com/gameArchives.jsp?user='.$username.'&year='.$year.'&month='.$month.$tags;
+        if (empty($tags) == false) { $htmlURL = $htmlURL . '&tags=' . $tags; }
+        $html = $curl->get($htmlURL);
         // echo $html;
 
         $doc = phpQuery::newDocument($html);
@@ -138,9 +143,12 @@ function updateCache() {
         $gameRecords = $gameLinks->parents('tr');
 
         foreach($gameRecords as $game) {
-            // Reviewed games mess up our formatting and don't really make sense for an archive anyway
-            if(pq($game)->find('td:eq(4)')->text() != 'Review') {
-
+            $type = pq($game)->find('td:eq(5)')->text();
+            // Test for the type of game. By default, only return ranked games.
+            // If $ranked == false, return all games that are not reviews, because reviews mess up our formatting.
+            // And we don't care about them anyway.
+            $typeFilter = ($ranked == true) ? ($type == 'Ranked') : ($type != 'Review');
+            if ($typeFilter) {
                 $g = array(); 
 
                 $g['sgf'] = pq($game)->find('td:eq(0) > a')->attr('href');

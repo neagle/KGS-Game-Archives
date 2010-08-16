@@ -1,0 +1,84 @@
+.kgsgames.table {
+    background-color: hsl(44, 67%, 59%);
+    background-image: url(/go/images/goban.jpg);
+    border: 1px solid hsla(0, 0%, 0%, 0.5);
+    color: #333;
+    float: left;
+    font-family: Futura, sans-serif;
+    font-size: 10px;
+    margin: 0;
+    -moz-border-radius: 10px;
+    -moz-box-shadow: 5px 5px 0 hsla(0, 0%, 0%, 0.5);
+    overflow: hidden;
+    -webkit-border-radius: 10px;
+}
+
+.kgsgames.table h3 {
+    font-size: 18px;
+}
+
+.kgsgames.table table {
+    border-collapse: collapse;
+}
+
+.kgsgames.table a {
+    color: #333;
+    display: block;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.kgsgames.table a:hover {
+    background-color: hsla(50, 50%, 70%, 0.8);
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+.kgsgames.table a:visited {
+    color: #666;
+}
+
+.kgsgames.table .date, .kgsgames.table .black, .kgsgames.table .black:before,  .kgsgames.table .white, .kgsgames.table .white:before, .kgsgames.table .vs {
+}
+
+.kgsgames.table .date {
+    display: block;
+    float: left;
+    font-size: 10px;
+    padding: .7em .5em .5em;
+    text-align: right;
+    text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
+    text-transform: uppercase;
+}
+
+.kgsgames.table .date a {
+    color: #fff;
+}
+
+.kgsgames.table .black, .kgsgames.table .white {
+    position: relative;
+}
+
+.kgsgames.table .black:before, .kgsgames.table .white:before {
+    bottom: -5px;
+    content: '•';
+    font-size: 24px;
+    height: 16px;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    text-shadow: 1px 1px 1px hsla(0, 0%, 0%, 0.5);
+    width: 16px;
+}
+
+.kgsgames.table .black:before {
+    color: #000;
+}
+
+.kgsgames.table .white:before {
+    color: #fff;
+}
+
+.kgsgames.table span.winner {
+}

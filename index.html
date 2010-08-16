@@ -3,18 +3,19 @@
 <head>
 <meta charset="utf-8" />
 <title>jQuery Plugin Boilerplate</title>
-<style type="text/css">
-span.winner {
-    background-color: hsla(100, 50%, 50%, 0.5);
-}
-</style>
+<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/kgsgames.css" />
 </head>
 
 <body>
 
 <!-- List to populate with games -->
-<ul id="go-games">
-</ul>
+<div id="go-games1" class="kgsgames">
+    <h3>Recent KGS Games</h3>
+</div>
+
+<div id="go-games2" class="kgsgames table">
+    <h3>Recent KGS Games</h3>
+</div>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.kgsgames.js"></script>
@@ -24,11 +25,27 @@ span.winner {
 (function($){
 
     $(document).ready(function() {
-        $('#go-games').kgsgames({
-            itemTag: '<li />',
+        $('#go-games1').kgsgames({
+            dateFormat: 'n.j.Y',
             numGames: 10,
             url: '/go/kgs/kgscurl.php',
             username: 'nate451'
+        });
+
+        // Example using a table
+        $('#go-games2').kgsgames({
+            dateFormat: 'n.j.Y',
+            numGames: 10,
+            ranked: false,
+            url: '/go/kgs/kgscurl.php',
+            username: 'nate451',
+            structure: {
+                archives: '<table />',
+                row: '<tr />',
+                item: '<td />',
+                space: ''
+            },
+            widgetName: 'two'
         });
     });
 
