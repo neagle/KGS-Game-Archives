@@ -48,3 +48,31 @@ p. Here's a list of available options:
 |_. Option |_. Type |_. Default |_. Explanation |
 | @archivesTag@ | string | '&lt;ul /&gt;' | Tag used for the container of all the individual games. |
 | @fullArchiveLink@ | string | '&lt;p /&gt;' | Tag used for the link to one's full archives at the end of the KGS Games widget. | 
+| @fullArchiveLinkText@ | string | 'Full Archive' | Default text for the link to one's full archives at the end of the KGS Games widget. |
+| @dateFormat@ | string | 'F jS' | Date format for game dates. Uses "PHP date syntax":http://php.net/manual/en/function.date.php |
+| @hoursFresh@ | number | 24 | Number of hours to consider a cached file fresh - not in need of an update from KGS. |
+| @noCache@ | boolean | false | If set to true, never uses the cached archive file. Useful when changing settings. Do not use for production. |
+| @numGames@ | number | 20 | Number of games to display, beginning with the most recent. |
+| @output@ | string | listed below | Controls the output for each game - default and available variables are listed after this. |
+| @ranked@ | boolean | true | By default, only retrieves ranked games. If set to false, will retreive all games except reviews. |
+| @tags@ | string | null | Set to "t" to retrieve only games with tags |
+| @url@ | string | null | The path to kgscurl.php |
+| @username@ | string | null | Your KGS username |
+| @widgetName@ | string | null | If, for whatever reason, you want two instances of the widget on the same site for the same username, you'll need to add a widgetName so that it uses a different cache file |
+
+h3. Output default and variables
+
+p. Default: @'<li><a href="http://eidogo.com/#url:@GAMESGF"><span class="date">@DATE:</span> <span class="black @BLACKRESULT">@BLACK</span> vs. <span class="white @WHITERESULT">@WHITE</span>: @RESULT</a>'@
+
+bc.. 
+   @GAMESGF: a link to a game's SGF file
+   @DATE: date of the game -- alter formatting via dateFormat option
+   @BLACK: username & rank of person playing black
+   @BLACKURL: link to black's archives on KGS
+   @BLACKRESULT: either 'winner' or 'loser', depending on who won
+   @WHITE: username & rank of person playing white
+   @WHITEURL: link to white's archives on KGS
+   @WHITERESULT: either 'winner' or 'loser', depending on who won
+   @RESULT: game outcome, ie: 'B+7.5' or 'W+Res.'
+
+p. Let me know if you have any feedback about how I can improve this plugin or its documentation. Onegaishimasu!
