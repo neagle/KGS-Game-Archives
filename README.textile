@@ -21,10 +21,11 @@ bc. <script type="text/javascript" src="/scripts/jquery.kgsgames.js"></script>
 p. The plugin should be activated on the container you want to populate with your list of games.
 
 <pre><code class="js">
-$(&#39;#go-games1&#39;).kgsgames({ 
-    url: &#39;/go/kgs/kgscurl.php&#39;, 
-    username: &#39;nate451&#39; 
-});</code></pre>
+$('#go-games1').kgsgames({
+    url: '/go/kgs/kgscurl.php',
+    username: 'nate451'
+});
+</code></pre>
 
 p. The url should be the path to wherever you've placed the kgscurl.php file. The username variable should be your KGS username.
 
@@ -45,5 +46,5 @@ bc.. $('#myKGSGamesWidget').kgsGames({
 p. Here's a list of available options:
 
 |_. Option |_. Type |_. Default |_. Explanation |
-| @archivesTag@ | string | '<ul />' | Tag used for the container of all the individual games. |
-| @fullArchiveLink@ | string | '<p />' | Tag used for the link to one's full archives at the end of the KGS Games widget. | 
+| @archivesTag@ | string | '&lt;ul /&gt;' | Tag used for the container of all the individual games. |
+| @fullArchiveLink@ | string | '&lt;p /&gt;' | Tag used for the link to one's full archives at the end of the KGS Games widget. | 
