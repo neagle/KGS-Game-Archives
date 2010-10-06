@@ -10,7 +10,7 @@
 
     // Configuration variables not accessible via the query string 
     $config = (object) array(
-        filename => 'kgs-rank-graph-',
+        folder => 'graphs',
         fileext => 'png',
         graphShelfLife => 24, // How many hours a local version of the graph is good for before it should be fetched again
         location => '/usr/bin/convert', // Path to ImageMagick
@@ -70,7 +70,7 @@
         return ($w == $width);
     }
 
-    $file = $config->filename . $options->username . '.' . $config->fileext;
+    $file = $config->folder . '/' . $options->username . '.' . $config->fileext;
     $config->location = $config->location . ' ';
  
     // If a local version of the graph hasn't been fetched in the alotted time, or its width doesn't match the current setting, fetch it again
@@ -78,7 +78,10 @@
 
         // Fetch a fresh version of the KGS Rank Graph, store it locally
         $content = file_get_contents($config->kgsURL . $options->username . '-' . $options->kgsClient . '.' . $config->fileext);
-        file_put_contents('./' . $file, $content);
+        if (!is_dir($config->folder)) {
+            mkdir($config->folder);
+        }
+        file_put_contents($file, $content);
 
         function getRGB($file, $x, $y) {
             global $config;
