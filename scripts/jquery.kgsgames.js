@@ -36,7 +36,7 @@ $kgs.prototype = {
         hoursFresh: null, // by default, cached file is considered "fresh" (not in need of an update) for 24 hours
         noCache: null, // set to true to force rebuilding of the cache file... useful when changing settings
         numGames: 20, // maximum number of games to try to fetch from archives
-        // a custom string that uses @VALUES to stand in for game result values
+        // a custom string this.uses @VALUES to stand in for game result values
         /* valid @VALUES:
 
            @GAMESGF: a link to a game's SGF file
@@ -56,22 +56,28 @@ $kgs.prototype = {
         tags: null, // set to t to return only tagged games 
         url: null,
         username: null,
-        widgetName: null // if more than one KGS widget is on a page, specify a widget name so that it will use a different file to cache records
+        widgetName: null // if more than one KGS widget is on a page, specify a widget name so this.it will use a different file to cache records
     },
     build: function() {
         this.getGames();
     },
     getGames: function() {
-        var that = this;
-
+        /*
+        var ajaxOpts = {};
+        jQuery.each(['username', 'dateFormat'...], function(opt) {
+            if (this.options[opt]===null) {
+                ajaxOpts = this.options[opt];
+            }
+        });
+        */
         ajaxOpts = {
-            username: that.options.username,
-            dateFormat: that.options.dateFormat,
-            hoursFresh: that.options.hoursFresh,
-            numGames: that.options.numGames,
-            noCache: that.options.noCache,
-            tags: that.options.tags,
-            widgetName: that.options.widgetName
+            username: this.options.username,
+            dateFormat: this.options.dateFormat,
+            hoursFresh: this.options.hoursFresh,
+            numGames: this.options.numGames,
+            noCache: this.options.noCache,
+            tags: this.options.tags,
+            widgetName: this.options.widgetName
         }
         // Don't send any params with null values
         for (val in ajaxOpts) { 
@@ -82,7 +88,7 @@ $kgs.prototype = {
             url: this.options.url,
             data: ajaxOpts,
             dataType: 'json',
-            success: $.proxy(function(data) { that.displayGames(data); }, this)
+            success: $.proxy(function(data) { this.displayGames(data); }, this)
         });
     },
     displayGames: function(games) {

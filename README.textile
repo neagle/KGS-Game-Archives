@@ -66,14 +66,16 @@ p. Default:
 
 bc.. <li><a href="http://eidogo.com/#url:@GAMESGF"><span class="date">@DATE:</span> <span class="black @BLACKRESULT">@BLACK</span> vs. <span class="white @WHITERESULT">@WHITE</span>: @RESULT</a>
 
-bc.. @GAMESGF: a link to a game's SGF file
-   @DATE: date of the game -- alter formatting via dateFormat option
-   @BLACK: username & rank of person playing black
-   @BLACKURL: link to black's archives on KGS
-   @BLACKRESULT: either 'winner' or 'loser', depending on who won
-   @WHITE: username & rank of person playing white
-   @WHITEURL: link to white's archives on KGS
-   @WHITERESULT: either 'winner' or 'loser', depending on who won
-   @RESULT: game outcome, ie: 'B+7.5' or 'W+Res.'
+bc..
+    @GAMESGF: a link to a game's SGF file
+    @DATE: date of the game -- alter formatting via dateFormat option
+    @BLACK: username & rank of person playing black
+    @BLACKURL: link to black's archives on KGS
+    @BLACKRESULT: either 'winner' or 'loser', depending on who won
+    @WHITE: username & rank of person playing white
+    @WHITEURL: link to white's archives on KGS
+    @WHITERESULT: either 'winner' or 'loser', depending on who won
+    @RESULT: game outcome, ie: 'B+7.5' or 'W+Res.'
+
 
 p. Let me know if you have any feedback about how I can improve this plugin or its documentation. Onegaishimasu!
