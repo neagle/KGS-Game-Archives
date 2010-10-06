@@ -46,8 +46,6 @@
         $options->width = 300;
     }
 
-
-
     // Check the freshness of a file
     // Shelf life is in hours 
     function checkFreshness($file, $shelfLife) {
@@ -77,7 +75,7 @@
     $file = $config->filename . $options->username . '.' . $config->fileext;
     $config->location = $config->location . ' ';
  
-    // If a local version of the graph hasn't been fetched in the alotted time...
+    // If a local version of the graph hasn't been fetched in the alotted time, or its width doesn't match the current setting, fetch it again
     if ((checkFreshness($file, $graphShelfLife) == false) || (checkDimensions($file, $options->width) == false)) {
 
         // Fetch a fresh version of the KGS Rank Graph, store it locally
@@ -100,13 +98,13 @@
             $borderColor = '111';
             $width = exec($config->location . $file . ' -format "%[fx:w]" info:');
             $height = exec($config->location . $file . ' -format "%[fx:h]" info:');
-            $dimensions = array();
+            $dimensions = (object) array();
 
             // Find where the border starts on the left
             for ($i = 1; $i < $width; $i++) {
                 $c = getRGB($file, $i, round($height/2));
                 if ($c == $borderColor) {
-                    $dimensions[0] = $i;
+                    $dimensions->x = $i + 1;
                     break;
                 }
             }
@@ -115,7 +113,7 @@
             for ($i = 1; $i < $height; $i++) {
                 $c = getRGB($file, round($width/2), $i);
                 if ($c == $borderColor) {
-                    $dimensions[1] = $i;
+                    $dimensions->y = $i + 1;
                     break;
                 }
             }
@@ -124,7 +122,7 @@
             for ($i = $width; $i > 0; $i--) {
                 $c = getRGB($file, $i, round($height/2));
                 if ($c == $borderColor) {
-                    $dimensions[2] = $i - $dimensions[0];
+                    $dimensions->width = $i - $dimensions->x;
                     break;
                 }
             }
@@ -133,14 +131,11 @@
             for ($i = $height; $i > 0; $i--) {
                 $c = getRGB($file, round($width/2), $i);
                 if ($c == $borderColor) {
-                    $dimensions[3] = $i - $dimensions[1];
+                    $dimensions->height = $i - $dimensions->y;
                     break;
                 }
             }
 
-            // We don't want the white border on the left
-            $dimensions[0] = $dimensions[0] + 1;
-            $dimensions[1] = $dimensions[1] + 1;
             return $dimensions;
         }
 
@@ -149,7 +144,7 @@
             $dimensions = findBorder($file);
 
             // Crop the image
-            exec($config->location . '-crop ' . $dimensions[2] . 'x' . $dimensions[3] . '+' . $dimensions[0] . '+' . $dimensions[1] . ' ' . $file . ' ' . $file);
+            exec($config->location . '-crop ' . $dimensions->width . 'x' . $dimensions->height . '+' . $dimensions->x . '+' . $dimensions->y . ' ' . $file . ' ' . $file);
         }
 
         // Create a thumbnail version of the graph
@@ -161,4 +156,5 @@
     // $w = exec($config->location . $file . ' -format "%[fx:w]" info:');
     $h = exec($config->location . $file . ' -format "%[fx:h]" info:');
     echo '<img src="' . $file . '" width="' . $options->width . '" height="' . $h . '" />';
+    // echo '<img src="' . $file . '" />';
 ?>
