@@ -22,13 +22,11 @@
     // Overwrite defaults with any values in the query string
     foreach($options as $key => $value) {
         if  (isset($_GET[$key])) {
-            $options->$key = $_GET[$key]; 
-            // Strip any non-allowed characters
-            $options->$key = preg_replace('[^a-zA-Z0-9]', '', $options->$key);
+            $val = $_GET[$key]; 
+            // Sanitize
+            $options->$key = preg_replace('/[^a-zA-Z0-9]*/', '', $val);
         }
     }
-
-    // Security checks
 
     // Make sure that width is an integer and within min and max width
     if (is_numeric($options->width)) {
