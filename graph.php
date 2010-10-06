@@ -1,21 +1,52 @@
 <?php
+    // These options may be passed in via query string parameters
     $options = (object) array(
         // Defaults 
-        filename => 'kgs-rank-graph-',
-        fileext => 'png',
-        graphShelfLife => 24, // How long a local version of the graph is good for before it should be fetched again
         username => 'nate451', // KGS username
         width => 300, //  Width to resize the graph to... height is not specified so that proper aspect ratio is preserved
+        kgsClient => 'en_US',
+        removeExtras => 'true' // Removes graph data and legend that become illegible at small sizes
+    );
+
+    // Configuration variables not accessible via the query string 
+    $config = (object) array(
+        filename => 'kgs-rank-graph-',
+        fileext => 'png',
+        graphShelfLife => 24, // How many hours a local version of the graph is good for before it should be fetched again
         location => '/usr/bin/convert', // Path to ImageMagick
         kgsURL => 'http://www.gokgs.com/servlet/graph/',
-        kgsClient => 'en_US',
-        removeExtras => 'true'
+        maxWidth => 640,
+        minWidth => 0
     );
 
     // Overwrite defaults with any values in the query string
-    foreach($_GET as $key => $value) {
-        $options->$key = $value; 
+    foreach($options as $key => $value) {
+        if  (isset($_GET[$key])) {
+            $options->$key = $_GET[$key]; 
+            // Strip any non-allowed characters
+            $options->$key = preg_replace('[^a-zA-Z0-9]', '', $options->$key);
+        }
     }
+
+    // Security checks
+
+    // Make sure that width is an integer and within min and max width
+    if (is_numeric($options->width)) {
+        $options->width = (int)$options->width; 
+
+        if ($options->width > $config->maxWidth) {
+            $options->width = $config->maxWidth;
+        }
+
+        if ($options->width < $config->minWidth) {
+            $options->width = $config->minWidth;
+        }
+    } else {
+        // If the value isn't numeric, set width to a default number 
+        $options->width = 300;
+    }
+
+
 
     // Check the freshness of a file
     // Shelf life is in hours 
@@ -36,39 +67,39 @@
 
     // Check to see if a file matches a given width
     function checkDimensions($file, $width) {
-        global $location;
+        global $config;
 
-        $w = exec($location . $file . ' -format "%[fx:w]" info:');
+        $w = exec($config->location . $file . ' -format "%[fx:w]" info:');
 
         return ($w == $width);
     }
 
-    $file = $options->filename . $options->username . '.' . $options->fileext;
-    $location = $options->location . ' ';
+    $file = $config->filename . $options->username . '.' . $config->fileext;
+    $config->location = $config->location . ' ';
  
     // If a local version of the graph hasn't been fetched in the alotted time...
     if ((checkFreshness($file, $graphShelfLife) == false) || (checkDimensions($file, $options->width) == false)) {
 
         // Fetch a fresh version of the KGS Rank Graph, store it locally
-        $content = file_get_contents($options->kgsURL . $options->username . '-' . $options->kgsClient . '.' . $options->fileext);
+        $content = file_get_contents($config->kgsURL . $options->username . '-' . $options->kgsClient . '.' . $config->fileext);
         file_put_contents('./' . $file, $content);
 
         function getRGB($file, $x, $y) {
-            global $location;
+            global $config;
 
             $command = $file . '[1x1+' . $x . '+' . $y .'] -format "%[fx:r]%[fx:g]%[fx:b]" info:';
-            $convert = $location . $command;
+            $convert = $config->location . $command;
             $output = exec($convert);    
             return $output;
         } 
 
         // Takes a KGS graph and finds its border
         function findBorder($file) {
-            global $location;
+            global $config;
             
             $borderColor = '111';
-            $width = exec($location . $file . ' -format "%[fx:w]" info:');
-            $height = exec($location . $file . ' -format "%[fx:h]" info:');
+            $width = exec($config->location . $file . ' -format "%[fx:w]" info:');
+            $height = exec($config->location . $file . ' -format "%[fx:h]" info:');
             $dimensions = array();
 
             // Find where the border starts on the left
@@ -118,16 +149,16 @@
             $dimensions = findBorder($file);
 
             // Crop the image
-            exec($location . '-crop ' . $dimensions[2] . 'x' . $dimensions[3] . '+' . $dimensions[0] . '+' . $dimensions[1] . ' ' . $file . ' ' . $file);
+            exec($config->location . '-crop ' . $dimensions[2] . 'x' . $dimensions[3] . '+' . $dimensions[0] . '+' . $dimensions[1] . ' ' . $file . ' ' . $file);
         }
 
         // Create a thumbnail version of the graph
         $command = '-thumbnail ' . $options->width;
-        $convert = $location . $command . ' ' . $file . ' ' . $file;
+        $convert = $config->location . $command . ' ' . $file . ' ' . $file;
         exec ($convert);
     }
 
-    // $w = exec($location . $file . ' -format "%[fx:w]" info:');
-    $h = exec($location . $file . ' -format "%[fx:h]" info:');
+    // $w = exec($config->location . $file . ' -format "%[fx:w]" info:');
+    $h = exec($config->location . $file . ' -format "%[fx:h]" info:');
     echo '<img src="' . $file . '" width="' . $options->width . '" height="' . $h . '" />';
 ?>
