@@ -8,18 +8,17 @@ $cacheFile = '_game_cache.json'; // specifies the file to write your game record
 $username = $_GET['username'];
 $numGames = isset($_GET['numGames']) ? $_GET['numGames'] : 20; // Maximum number of games to retrieve
 $hoursFresh = isset($_GET['hoursFresh']) ? $_GET['hoursFresh'] : 24; // Number of hours to get games from cache before refetching data from KGS
-$dateFormat = isset($_GET['dateFormat']) ? $_GET['dateFormat'] : 'F jS, Y'; // Default date format 
+$dateFormat = isset($_GET['dateFormat']) ? $_GET['dateFormat'] : 'F jS, Y'; // Default date format
 $ranked = isset($_GET['ranked']) ? $_GET['ranked'] : true; // by default, only fetches ranked games
-$tags = isset($_GET['tags']) ? '&tags=' . $_GET['tags'] : ''; 
-$widgetName = isset($_GET['widgetName']) ? '_' . $_GET['widgetName'] : ''; 
+$tags = isset($_GET['tags']) ? '&tags=' . $_GET['tags'] : '';
+$widgetName = isset($_GET['widgetName']) ? '_' . $_GET['widgetName'] : '';
 
 // You shouldn't need to alter any of the following code.
 $kgsURL = 'http://gokgs.com/';
 $cacheFile = $cacheDir . $username . $widgetName . $cacheFile;
 
 // Curl utility -- not written by me (should find attribution for this, if possible)
-class Curl
-{       
+class Curl {
 
     public $cookieJar = "";
 
@@ -27,9 +26,7 @@ class Curl
         $this->cookieJar = $cookieJarFile;
     }
 
-    function setup()
-    {
-
+    function setup() {
 
         $header = array();
         $header[0] = "Accept: text/xml,application/xml,application/xhtml+xml,";
@@ -44,30 +41,27 @@ class Curl
 
         curl_setopt($this->curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.1.7) Gecko/20070914 Firefox/2.0.0.7');
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($this->curl,CURLOPT_COOKIEJAR, $cookieJar); 
+        curl_setopt($this->curl,CURLOPT_COOKIEJAR, $cookieJar);
         curl_setopt($this->curl,CURLOPT_COOKIEFILE, $cookieJar);
         curl_setopt($this->curl,CURLOPT_AUTOREFERER, true);
         curl_setopt($this->curl,CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($this->curl,CURLOPT_RETURNTRANSFER, true);  
+        curl_setopt($this->curl,CURLOPT_RETURNTRANSFER, true);
     }
 
 
-    function get($url)
-    { 
+    function get($url) {
         $this->curl = curl_init($url);
-        $this->setup();
+        //$this->setup();
 
         return $this->request();
     }
 
-    function getAll($reg,$str)
-    {
+    function getAll($reg,$str) {
         preg_match_all($reg,$str,$matches);
         return $matches[1];
     }
 
-    function postForm($url, $fields, $referer='')
-    {
+    function postForm($url, $fields, $referer='') {
         $this->curl = curl_init($url);
         $this->setup();
         curl_setopt($this->curl, CURLOPT_URL, $url);
@@ -77,14 +71,12 @@ class Curl
         return $this->request();
     }
 
-    function getInfo($info)
-    {
+    function getInfo($info) {
         $info = ($info == 'lasturl') ? curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL) : curl_getinfo($this->curl, $info);
         return $info;
     }
 
-    function request()
-    {
+    function request() {
         return curl_exec($this->curl);
     }
 }
@@ -150,7 +142,7 @@ function updateCache() {
             // And we don't care about them anyway.
             $typeFilter = ($ranked == true) ? ($type == 'Ranked') : ($type != 'Review');
             if ($typeFilter) {
-                $g = array(); 
+                $g = array();
 
                 $g['sgf'] = pq($game)->find('td:eq(0) > a')->attr('href');
                 $g['white'] = pq($game)->find('td:eq(1)')->text();
@@ -163,7 +155,7 @@ function updateCache() {
                 // Convert date string to unix timestamp
                 $gameDate = strtotime($gameDate);
                 $gameDate = date($dateFormat, $gameDate);
-                $g['date'] = $gameDate; 
+                $g['date'] = $gameDate;
 
                 $g['result'] = pq($game)->find('td:eq(6)')->text();
 
@@ -187,7 +179,9 @@ function updateCache() {
     // convert game records to json
     $games = json_encode($games);
 
-    // Write contents of KGS Game Archives page to user-specified $gameFile 
+    // Write contents of KGS Game Archives page to user-specified $gameFile
+    echo $cacheFile;
+    echo getcwd();
     $fh = fopen($cacheFile, 'w') or die('Can\'t open file.');
     fwrite($fh, $games);
     fclose($fh);
